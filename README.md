@@ -26,3 +26,16 @@ For example, if files are migrated from a local folder to a remote folder (`C:\`
 
 `.\Update-ExcelExternalRefs.ps1 -SearchPath 'C:\Users\User1\Documents\' -Find 'C:\Users\User1\Documents\Accounts\' -Replace 'P:\Shared\Accounts\'`
 
+## Get-MailboxDatabaseLogFile.ps1 ##
+
+Gets the log files associated with an Exchange database. By default only the log files committed to the Exchange database are returned. These are log files that can be moved or deleted in a situation where free space on the volume hosting the database is running out. Exchange 2010 and greater is supported only.
+
+Log files with a sequence number are matched using the ESE Utilites binary (eseutil.exe) included with Exchange, these are files with a prefix then 8 digits of hexadecimal (E000000001A.log). The active log file is not matched.
+
+The correct way to purge log files is to run a backup, this ensures that a valid copy of the database exists and therefore log files older than the backup date are no longer needed to complete a restore. If log files after the last backup date are deleted, and database corruption occurs, then data since the last backup is lost. When log files are still available they can be replayed into a restored database to reduce the data loss.
+
+### Example ###
+
+`.\Get-MailboxDatabaseLogFile.ps1 -LogFolderPath 'D:\ExchangeDB1\' -LogFilePrefix 'E00'`
+`Get-MailboxDatabase -Name ExchangeDB1 | . \Get-MailboxDatabaseLogFile.ps1 | Select-Object -Last 20 | Remove-Item`
+`Get-MailboxDatabase -Name ExchangeDB1 | . \Get-MailboxDatabaseLogFile.ps1 | Move-Item -Destination "C:\CommitedLogs"`
