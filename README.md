@@ -30,7 +30,7 @@ For example, if files are migrated from a local folder to a remote folder (`C:\`
 
 Gets the log files associated with an Exchange database. By default only the log files committed to the Exchange database are returned. These are log files that can be moved or deleted in a situation where free space on the volume hosting the database is running out. Exchange 2010 and greater is supported only.
 
-Log files with a sequence number are matched using the ESE Utilites binary (eseutil.exe) included with Exchange, these are files with a prefix then 8 digits of hexadecimal (E000000001A.log). The active log file is not matched.
+Log files with a sequence number are matched using the ESE Utilites binary (`eseutil.exe`) included with Exchange, these are files with a prefix then 8 digits of hexadecimal (`E000000001A.log`). The active log file is not matched.
 
 The correct way to purge log files is to run a backup, this ensures that a valid copy of the database exists and therefore log files older than the backup date are no longer needed to complete a restore. If log files after the last backup date are deleted, and database corruption occurs, then data since the last backup is lost. When log files are still available they can be replayed into a restored database to reduce the data loss.
 
@@ -41,3 +41,25 @@ The correct way to purge log files is to run a backup, this ensures that a valid
 `Get-MailboxDatabase -Name ExchangeDB1 | . \Get-MailboxDatabaseLogFile.ps1 | Select-Object -Last 20 | Remove-Item`
 
 `Get-MailboxDatabase -Name ExchangeDB1 | . \Get-MailboxDatabaseLogFile.ps1 | Move-Item -Destination "C:\CommitedLogs"`
+
+## PasswordNotifyTask.ps1 ##
+
+Sends a customizable message to user accounts that are configured with an email address and a password that can expire. This is best used as a scheduled task and can be configured by editing variables in the script.
+
+### Configuration ###
+
+To run the script on a domain member server the `ActiveDirectory` PowerShell module is required, this can be installed with `Install-WindowsFeature RSAT-AD-PowerShell`.
+
+The following variables are available for configuration in the script file. `AD_SERVER`, `NOTIFY_BEFORE`, `NOTIFY_GROUP`, `NOTIFY_OU`, `NOTIFY_NAME`, `EMAIL_TEST`, `EMAIL_SERVER`, `EMAIL_PORT`, `EMAIL_SSL`, `EMAIL_CREDENTIAL`, `EMAIL_FROM`, `EMAIL_SUBJECT`, `EMAIL_BODY`.
+
+To log information and errors to the "Application" event log an event source named `PasswordNotifyTask` must be registered. This can be done with the follow command on the server running the script.
+
+`New-EventLog -LogName 'Application' -Source 'PasswordNotifyTask'`
+
+### Permissions ###
+
+When running the script under a "Domain User" account the permissions below are required where appropriate.
+
+The account must have read access to the objects in the `Password Settings Container` that define fine grained password policies. This can be done by applying `List contents`, `Read all properties` and `Read` permissions to the `Descendant msDS-PasswordSettings` and `Descendant msDS-PasswordSettingsContainer` object classes on the `Password Settings Container`.
+
+If run on a Domain Controller with UAC enabled, objects required by the script may be filtered by UAC if an account without Domain Admin permissions is used. To avoid this issue the variable `AD_SERVER` can be configured in the script to run commands on a specified Domain Controller. A remote connection will not be subject to UAC filtering.
