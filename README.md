@@ -42,6 +42,24 @@ The correct way to purge log files is to run a backup, this ensures that a valid
 
 `Get-MailboxDatabase -Name ExchangeDB1 | . \Get-MailboxDatabaseLogFile.ps1 | Move-Item -Destination "C:\CommitedLogs"`
 
+## Test-DnsServerScavenging.ps1 ##
+
+Runs a test scavenging event and returns DNS resource records that are candidates for removal and considered stale. There are two parts to DNS scavenging, the aging interval settings which are configured per zone, and the scavenging event or task that is typially configured on one DNS server only.
+
+By default the aging settings of the DNS zone will be used (the default is 7 days for both no refresh and refresh). However a duration for the intervals can be chosen by passing a `[TimeSpan]` object to the `-NoRefreshInterval` and `-RefreshInterval` parameters.
+
+Records that fall within either of the two intervals can be returned using the `-Type` parameter with the `NoRefresh` or `Refresh` keywords. The keyword `Stale` can be used to return records that fall outside both interval durations. This is the default behaviour.
+
+For DNS resource record timestamps to be replicated aging must be enabled on the zone, if it is not enabled timestamp attributes will only be updated on the server that the client chose to report in to. This will usually be the primary DNS server for the site or subnet the client is a member of. The `-ComputerName` parameter can be used to choose which server to run the cmdlet against.
+
+### Example ###
+
+`./Test-DnsServerScavenging -ZoneName 'lan.example.com'`
+
+`./Test-DnsServerScavenging -ZoneName 'lan.example.com' -Type Refresh -ComputerName 'lab-hq-dc1'`
+
+`./Test-DnsServerScavenging -ZoneName 'lan.example.com' -NoRefreshInterval (New-TimeSpan -Days 3) -RefreshInterval (New-TimeSpan -Days 7)`
+
 ## PasswordNotifyTask.ps1 ##
 
 Sends a customizable message to user accounts that are configured with an email address and a password that can expire. This is best used as a scheduled task and can be configured by editing variables in the script.
