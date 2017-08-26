@@ -81,3 +81,17 @@ When running the script under a "Domain User" account the permissions below are 
 The account must have read access to the objects in the `Password Settings Container` that define fine grained password policies. This can be done by applying `List contents`, `Read all properties` and `Read` permissions to the `Descendant msDS-PasswordSettings` and `Descendant msDS-PasswordSettingsContainer` object classes on the `Password Settings Container`.
 
 If run on a Domain Controller with UAC enabled, objects required by the script may be filtered by UAC if an account without Domain Admin permissions is used. To avoid this issue the variable `AD_SERVER` can be configured in the script to run commands on a specified Domain Controller. A remote connection will not be subject to UAC filtering.
+
+## Invoke-PingLog.ps1 ##
+
+Tests and monitors network connectivity using ICMP echo packets. Behavior is similar to the Windows ping command and essentially wraps the `Win32_PingStatus` WMI class.
+
+Failure and success responses can be filtered by a chosen threshold to aid monitoring of connections, and logging to a CSV format file is possible. Logs are not effected by filtering. 
+
+If a domain name resolves to both an IPv4 and an IPv6 address then the IPv6 address will be preferred, this is a behaviour of the `Win32_PingStatus` class with no option to force either protocol.
+
+### Example ###
+
+`.\Invoke-Pinglog.ps1 8.8.8.8 -ResolveAddress -Count 4`
+
+`.\Invoke-Pinglog.ps1 google.com -WriteType Failed -EnableLog -LogPath "C:\Users\Administrator\Documents"`
