@@ -95,3 +95,25 @@ If a domain name resolves to both an IPv4 and an IPv6 address then the IPv6 addr
 `.\Invoke-Pinglog.ps1 8.8.8.8 -ResolveAddress -Count 4`
 
 `.\Invoke-Pinglog.ps1 google.com -WriteType Failed -EnableLog -LogPath "C:\Users\Administrator\Documents"`
+
+## OutlookSignatureScript.ps1 ##
+
+A log on script which generates Outlook signatures and can embed user details from Active Directory such as an email address or phone number. The signatures are generated from templates in Word format (`.doc`/`.docx`) and copied to the user profile location that Outlook checks for signature files. 
+
+How often the generation and copy takes place is defined by two conditions:
+1. If the template file is modified the signature will be updated the next time the script runs.
+2. The `$UpdateThreashold` value must have expired for an update to take place. The purpose of the `$UpdateThreashold` value is to prevent updates happening too often (eg. on every log in) as there can be an impact on log on speed due to Word and Outlook processes being started.
+
+Checking the `whenChanged` User object attribute to hint at when to update the template (eg. if the mobile number was updated) appears a good idea, but in practice there are a couple of issues: `whenChanged` is not a replicated attribute so it is different on each domain controller; and there are many actions that can update this attribute (any log on event for example), not just editing of the attributes of interest here.
+
+### Configuration ###
+
+The script would typically be configured as a log on script via Group Policy, however to debug it can be run in a Powershell console, this is the easiest way to troubleshoot issues. A file log can be enabled which will log to the `AppData\Local` folder, and Event Log entries will be generated if the event source `OutlookSignature` is registered on the client. Registering an event source requires Administrator permissions.
+
+Multiple templates can be placed in the `$TemplatePath` folder, they will all be processed by the script, however sub-folders will not be searched.
+
+To embed details from an AD User object into a template file the attribute name must be wrapped in `{}` to create a "tag". For example `{mail}` will embed the users email address and `{telephoneNumber}` the phone number. The tag name must match the attribute name (`LDAP-Display-Name` to be exact) as it appears in AD, these can be found under the properties of a User object in the "Attribute Editor" tab, or a useful selection listed [here](https://cloudsupport.exclaimer.com/hc/en-us/articles/207803339-Which-AD-attributes-can-be-used-in-Signatures-for-Office-365-)
+
+It is also possible to assign a template as the default "new" or "reply" signature, and to delete a signature by using an "action". The format is `Signature_Name-Action.docx`, eg. `Full-New.docx` will create a signature named "Full" and make it default for new mail messages, adding "Delete" instead (`Full-Delete.docx`) will delete the "Full" signature completley. The three actions are `New`, `Reply` and `Delete`.
+
+The following variables are available for configuration: `$TemplatePath`, `$UpdateThreashold`, `$OutlookSignaturePath`, `$SettingsKeyName`, `$EnableLogFile`, `$LogPath`. These are described in more detail in the script file.
