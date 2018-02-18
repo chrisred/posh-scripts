@@ -68,7 +68,7 @@ Sends a customizable message to user accounts that are configured with an email 
 
 To run the script on a domain member server the `ActiveDirectory` PowerShell module is required, this can be installed with `Install-WindowsFeature RSAT-AD-PowerShell`.
 
-The following variables are available for configuration in the script file. `AD_SERVER`, `NOTIFY_BEFORE`, `NOTIFY_GROUP`, `NOTIFY_OU`, `NOTIFY_NAME`, `EMAIL_TEST`, `EMAIL_SERVER`, `EMAIL_PORT`, `EMAIL_SSL`, `EMAIL_CREDENTIAL`, `EMAIL_FROM`, `EMAIL_SUBJECT`, `EMAIL_BODY`.
+The following variables are available for configuration in the script file. `$AD_SERVER`, `$NOTIFY_BEFORE`, `$NOTIFY_GROUP`, `$NOTIFY_OU`, `$NOTIFY_NAME`, `$EMAIL_TEST`, `$EMAIL_SERVER`, `$EMAIL_PORT`, `$EMAIL_SSL`, `$EMAIL_CREDENTIAL`, `$EMAIL_FROM`, `$EMAIL_SUBJECT`, `$EMAIL_BODY`.
 
 To log information and errors to the "Application" event log an event source named `PasswordNotifyTask` must be registered. This can be done with the follow command on the server running the script.
 

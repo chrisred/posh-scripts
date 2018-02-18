@@ -1,4 +1,4 @@
-# PasswordNotifyTask.ps1 v1.0 (c) Chris Redit
+# PasswordNotifyTask.ps1 v1.1 (c) Chris Redit
 
 $ErrorActionPreference = 'Stop'
 
@@ -16,37 +16,37 @@ catch
     throw
 }
 
-# README
-#  The commented 'Set-Variable' cmdlets below are used to configure the script, edit the '-Value' parameter as required.
-#  To log information and errors to the event log create an event source named 'PasswordNotifyTask'.
-#  Please see https://github.com/chrisred/posh-scripts#passwordnotifytaskps1 for the full README.
+## README
+# The commented variables below are used to configure the script. To log information and errors to the event log create an
+# event source named 'PasswordNotifyTask'.
+# Please see https://github.com/chrisred/posh-scripts#passwordnotifytaskps1 for the full README.
 
 # Domain Controller to run user and group cmdlets against, default uses the DNSRoot property to automatically resolve a server
-Set-Variable -Option Constant -Name AD_SERVER -Value (Get-AdDomain).DNSRoot
+$AD_SERVER = (Get-AdDomain).DNSRoot
 # Number of full days before the password expires to start notifying the user, default is 4
-Set-Variable -Option Constant -Name NOTIFY_BEFORE -Value 4
+$NOTIFY_BEFORE = 4
 # The group name users must be a member of to receive a notification, if this is set NOTIFY_OU is ignored, default is $null
-Set-Variable -Option Constant -Name NOTIFY_GROUP -Value $null
+$NOTIFY_GROUP = $null
 # The OU users must be a member of to receive a notification, default is the whole directory via the "Default Naming Context"
-Set-Variable -Option Constant -Name NOTIFY_OU -Value (Get-ADRootDSE).DefaultNamingContext
+$NOTIFY_OU = (Get-ADRootDSE).DefaultNamingContext
 # The property of the user object to reference for the user's name in the notification email, options are Name,GivenName,Surname,DisplayName, default is Name
-Set-Variable -Option Constant -Name NOTIFY_NAME -Value 'Name'
+$NOTIFY_NAME = 'Name'
 # Mail server address for Send-MailMessage
-Set-Variable -Option Constant -Name EMAIL_SERVER -Value 'mail.example.com'
+$EMAIL_SERVER = 'mail.example.com'
 # Mail server port for Send-MailMessage (only supported in PSv3 and greater), default is 25
-Set-Variable -Option Constant -Name EMAIL_PORT -Value 25
+$EMAIL_PORT = 25
 # SSL option for Send-MailMessage enable with $true, default is $false
-Set-Variable -Option Constant -Name EMAIL_SSL -Value $false
+$EMAIL_SSL = $false
 # PSCredential object for Send-MailMessage, setting $null will use the account running the script, default is an anonymous user
-Set-Variable -Option Constant -Name EMAIL_CREDENTIAL -Value (New-Object Management.Automation.PSCredential('anonymous', (ConvertTo-SecureString -String 'anonymous' -AsPlainText -Force)))
+$EMAIL_CREDENTIAL = (New-Object Management.Automation.PSCredential('anonymous', (ConvertTo-SecureString -String 'anonymous' -AsPlainText -Force)))
 # Redirect all notification emails to this address when testing, default is $null
-Set-Variable -Option Constant -Name EMAIL_TEST -Value $null
+$EMAIL_TEST = $null
 # From address that appears in the notification email
-Set-Variable -Option Constant -Name EMAIL_FROM -Value 'notify@example.com'
+$EMAIL_FROM = 'notify@example.com'
 # Subject of the the notification email, '{0}' displays the time to expiry text
-Set-Variable -Option Constant -Name EMAIL_SUBJECT -Value 'Your password will expire {0}'
+$EMAIL_SUBJECT = 'Your password will expire {0}'
 # Body of the notification email, '{0}' displays the account Name '{1}' displays the time to expiry text
-Set-Variable -Option Constant -Name EMAIL_BODY -Value @"
+$EMAIL_BODY = @"
 Dear {0},
 
 Your password will expire {1}
