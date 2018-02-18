@@ -80,7 +80,7 @@ When running the script under a "Domain User" account the permissions below are 
 
 The account must have read access to the objects in the `Password Settings Container` that define fine grained password policies. This can be done by applying `List contents`, `Read all properties` and `Read` permissions to the `Descendant msDS-PasswordSettings` and `Descendant msDS-PasswordSettingsContainer` object classes on the `Password Settings Container`.
 
-If run on a Domain Controller with UAC enabled, objects required by the script may be filtered by UAC if an account without Domain Admin permissions is used. To avoid this issue the variable `AD_SERVER` can be configured in the script to run commands on a specified Domain Controller. A remote connection will not be subject to UAC filtering.
+If run on a Domain Controller with UAC enabled, objects required by the script may be filtered by UAC if an account without Domain Admin permissions is used. To avoid this issue the variable `$AD_SERVER` can be configured in the script to run commands on a specified Domain Controller. A remote connection will not be subject to UAC filtering.
 
 ## Invoke-PingLog.ps1 ##
 
