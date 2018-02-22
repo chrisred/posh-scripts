@@ -279,7 +279,7 @@ try
                 if ($TemplateAction -eq 'reply' -or $TemplateAction -eq 'both')
                 {
                     $Word.EmailOptions.EmailSignature.ReplyMessageSignature = $TemplateName
-                    if ($TemplateName -ne 'both' -and $Word.EmailOptions.EmailSignature.NewMessageSignature -eq $TemplateName)
+                    if ($TemplateAction -ne 'both' -and $Word.EmailOptions.EmailSignature.NewMessageSignature -eq $TemplateName)
                     {
                         $Word.EmailOptions.EmailSignature.NewMessageSignature = ''
                     }
