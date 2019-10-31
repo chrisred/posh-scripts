@@ -9,8 +9,6 @@
 $TemplatePath = '\\example.com\NETLOGON\Signatures'
 # Time in minutes to wait before attempting to update the signature files, default 24hrs.
 $UpdateThreashold = (24*60)
-# Path Outlook loads signature files from, default is for English localisations.
-$OutlookSignaturePath = $env:APPDATA+'\Microsoft\Signatures'
 # Registry key name for storing settings under the users profile, default 'OutlookSignatureScript'.
 $SettingsKeyName = 'OutlookSignatureScript'
 # Enable the log file (for event log logging a source named 'OutlookSignature' must be registered), default $false
@@ -111,7 +109,11 @@ try
         $ProfileText = 'Default profile found.'
         $OutlookDefaultProfile = $true
     }
-
+    
+    # get the localised name for the "Signatures" folder and build the path
+    $SignatureFolderName = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Office\$OutlookVersion.0\Common\General").Signatures
+    $OutlookSignaturePath = $env:APPDATA+'\Microsoft\'+$SignatureFolderName
+    
     $Events = [System.Collections.ArrayList]@()
     $Word = $null
     # main loop to generate files required for an Outlook signature from the template(s)
