@@ -16,11 +16,11 @@ $EnableLogFile = $false
 # Path to write the log file to, default is 'AppData\Local\OutlookSignatureScript'.
 $LogPath = $env:LOCALAPPDATA+'\OutlookSignatureScript'
 
-Function Write-Log ([String]$Message, [Int]$EventId = $null, [String]$EventType = 'Information')
+$LogTime = Get-Date -Format 'yyMMddHHmm'
+Function Write-Log ([String]$Message, [Nullable[Int]]$EventId = $null, [String]$EventType = 'Information')
 {
     if ($EnableLogFile)
     {
-        $LogTime = Get-Date -Format 'yyMMddHHmm'
         if (-not (Test-Path -Path $LogPath)) {New-Item -ItemType Directory -Path $LogPath}
         Out-File -InputObject $Message -FilePath (Join-Path -Path $LogPath -ChildPath "sigscript-$($LogTime).log") -Append    
     }
@@ -36,7 +36,7 @@ Function Write-Log ([String]$Message, [Int]$EventId = $null, [String]$EventType 
     }
     catch
     {
-        Write-Warning $_.ToString()
+        Write-Warning "Event log: $($_.ToString())"
     }
 }
 
