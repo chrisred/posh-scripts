@@ -248,17 +248,43 @@ try
             }
             
             $Events[$i]['BadTags'] = $BadTagCount
-
-            # save the signature template files in html/rtf/txt formats
-            $SavePath = Join-Path -Path $OutlookSignaturePath -ChildPath "$TemplateName.htm"
-            $Word.ActiveDocument.SaveAs([Ref]$SavePath, [Ref][Microsoft.Office.Interop.Word.WdSaveFormat]::wdFormatHTML)
-
-            $SavePath = Join-Path -Path $OutlookSignaturePath -ChildPath "$TemplateName.rtf"
-            $Word.ActiveDocument.SaveAs([Ref]$SavePath, [Ref][Microsoft.Office.Interop.Word.WdSaveFormat]::wdFormatRTF)
-
-            $SavePath = Join-Path -Path $OutlookSignaturePath -ChildPath "$TemplateName.txt"
-            $Word.ActiveDocument.SaveAs([Ref]$SavePath, [Ref][Microsoft.Office.Interop.Word.WdSaveFormat]::wdFormatText)
-            $Word.ActiveDocument.Close()
+            
+            try
+            {
+                # save the signature template files in html/rtf/txt formats
+                $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.htm'
+                $Word.ActiveDocument.SaveAs([Ref]$SavePath, 8) #wdFormatHTML
+                
+                $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.rtf'
+                $Word.ActiveDocument.SaveAs([Ref]$SavePath, 6) #wdFormatRTF
+                
+                $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.txt'
+                $Word.ActiveDocument.SaveAs([Ref]$SavePath, 2) #wdFormatText
+            }
+            catch [Management.Automation.MethodException]
+            {
+                # with certain versions of Word/Windows passing the WdSaveFormat constant as a "ref" is required
+                # Argument: '2' should be a System.Management.Automation.PSReference. Use [ref].
+                if ($_.FullyQualifiedErrorId -eq 'NonRefArgumentToRefParameterMsg')
+                {
+                    $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.htm'
+                    $Word.ActiveDocument.SaveAs([Ref]$SavePath, [Ref]8)
+                    
+                    $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.rtf'
+                    $Word.ActiveDocument.SaveAs([Ref]$SavePath, [Ref]6)
+                    
+                    $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.txt'
+                    $Word.ActiveDocument.SaveAs([Ref]$SavePath, [Ref]2)
+                }
+                else
+                {
+                    throw
+                }
+            }
+            finally
+            {
+                $Word.ActiveDocument.Close()
+            }
             
             # if there is a default profile available then the new or reply options can be set
             if ($OutlookDefaultProfile)
