@@ -254,13 +254,13 @@ try
             try
             {
                 # save the signature template files in html/rtf/txt formats
-                $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.htm'
+                [String]$SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.htm'
                 $Word.ActiveDocument.SaveAs([Ref]$SavePath, 8) #wdFormatHTML
                 
-                $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.rtf'
+                [String]$SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.rtf'
                 $Word.ActiveDocument.SaveAs([Ref]$SavePath, 6) #wdFormatRTF
                 
-                $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.txt'
+                [String]$SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.txt'
                 $Word.ActiveDocument.SaveAs([Ref]$SavePath, 2) #wdFormatText
             }
             catch [Management.Automation.MethodException]
@@ -269,13 +269,13 @@ try
                 # Argument: '2' should be a System.Management.Automation.PSReference. Use [ref].
                 if ($_.FullyQualifiedErrorId -eq 'NonRefArgumentToRefParameterMsg')
                 {
-                    $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.htm'
+                    [String]$SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.htm'
                     $Word.ActiveDocument.SaveAs([Ref]$SavePath, [Ref]8)
                     
-                    $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.rtf'
+                    [String]$SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.rtf'
                     $Word.ActiveDocument.SaveAs([Ref]$SavePath, [Ref]6)
                     
-                    $SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.txt'
+                    [String]$SavePath = $OutlookSignaturePath+'\'+$TemplateName+'.txt'
                     $Word.ActiveDocument.SaveAs([Ref]$SavePath, [Ref]2)
                 }
                 else
