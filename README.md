@@ -118,7 +118,7 @@ It is also possible to assign a template as the default "new" or "reply" signatu
 
 Using any action except `Delete` will cause an `outlook.exe` process to be started as this is required to change the default signature settings. The actions will only run if there is a default Outlook profile already present, otherwise the script would be blocked by the "Add New Account" wizard dialog.
 
-The following variables are available for configuration: `$TemplatePath`, `$UpdateThreashold`, `$OutlookSignaturePath`, `$SettingsKeyName`, `$EnableLogFile`, `$LogPath`. These are described in more detail in the script file.
+The following variables are available for configuration: `$TemplatePath`, `$UpdateThreashold`, `$SettingsKeyName`, `$EnableLogFile`, `$LogPath`. These are described in more detail in the script file.
 
 ## LogCleanTask.ps1 ##
 
