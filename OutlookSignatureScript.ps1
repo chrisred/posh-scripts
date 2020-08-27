@@ -111,7 +111,14 @@ try
     }
     
     # get the localised name for the "Signatures" folder and build the path
-    $SignatureFolderName = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Office\$OutlookVersion.0\Common\General").Signatures
+    if ($OutlookVersion -eq 16)
+	{
+		$SignatureFolderName = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Office\$OutlookVersion.0\User Settings\Mso_CoreReg\Create\Software\Microsoft\Office\$OutlookVersion.0\Common\General").Signatures
+	}
+    else
+    {
+	$SignatureFolderName = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Office\$OutlookVersion.0\Common\General").Signatures
+    }
     $OutlookSignaturePath = $env:APPDATA+'\Microsoft\'+$SignatureFolderName
     
     $Events = [System.Collections.ArrayList]@()
