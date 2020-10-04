@@ -11,6 +11,8 @@ $TemplatePath = '\\example.com\NETLOGON\Signatures'
 $UpdateThreashold = (24*60)
 # Registry key name for storing settings under the users profile, default 'OutlookSignatureScript'.
 $SettingsKeyName = 'OutlookSignatureScript'
+# Alternate method for discovering the 'Signature' folder name, this will search the local machine registry location.
+$UseMachineSignatureFolderName = $false
 # Enable the log file (for event log logging a source named 'OutlookSignature' must be registered), default $false
 $EnableLogFile = $false
 # Path to write the log file to, default is 'AppData\Local\OutlookSignatureScript'.
@@ -110,8 +112,36 @@ try
         $OutlookDefaultProfile = $true
     }
     
-    # get the localised name for the "Signatures" folder and build the path
+    # get the localised name for the "Signatures" folder from user profile registry location
     $SignatureFolderName = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Office\$OutlookVersion.0\Common\General").Signatures
+    
+    if ($UseMachineSignatureFolderName)
+    {
+        # In some cases the localised name of the "Signatures" folder is set at a local machine registry location,
+        # this may be when Windows and Office were installed/configured with different language settings.
+        $MachineSignatureFolderName64 = (Get-ItemProperty -Path `
+            "HKLM:\SOFTWARE\Microsoft\Office\$OutlookVersion.0\User Settings\Mso_CoreReg\Create\Software\Microsoft\Office\14.0\Common\General"
+        ).Signatures
+        
+        $MachineSignatureFolderName32 = (Get-ItemProperty -Path `
+            "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Office\$OutlookVersion.0\User Settings\Mso_CoreReg\Create\Software\Microsoft\Office\14.0\Common\General"
+        ).Signatures
+        
+        if ($null -ne $MachineSignatureFolderName64)
+        {
+            $SignatureFolderName = $MachineSignatureFolderName64
+        }
+        elseif ($null -ne $MachineSignatureFolderName32)
+        {
+            $SignatureFolderName = $MachineSignatureFolderName32
+        }
+    }
+    
+    if ($null -eq $SignatureFolderName)
+    {
+        throw '"Signature" folder name not found, enable $UseMachineSignatureFolderName to try an alternative method.'
+    }
+    
     $OutlookSignaturePath = $env:APPDATA+'\Microsoft\'+$SignatureFolderName
     
     $Events = [System.Collections.ArrayList]@()
