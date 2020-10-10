@@ -15,6 +15,8 @@ $SettingsKeyName = 'OutlookSignatureScript'
 $UseMachineSignatureFolderName = $false
 # Enable deletion of lines in a signature template which contain an empty tag, occurs when the property in Active Directory is not populated for a user.
 $EnableDeleteEmptyTagLine = $false
+# Enable "mailto:" formatting for email addresses.
+$EnableMailToLink = $true
 # Enable the log file (for event log logging a source named 'OutlookSignature' must be registered), default $false
 $EnableLogFile = $false
 # Path to write the log file to, default is 'AppData\Local\OutlookSignatureScript'.
@@ -251,7 +253,7 @@ try
                 try
                 {
                     # add "mailto:" hyperlink for the email address field
-                    if ($Tag.Value -eq '{mail}' -or $Tag.Value -eq '{emailAddress}')
+                    if ($Tag.Value -eq '{mail}' -or $Tag.Value -eq '{emailAddress}' -and $EnableMailToLink -eq $true)
                     {
                         $Word.Selection.Find.Execute($Tag.Value) | Out-Null
                         $Word.ActiveDocument.Hyperlinks.Add($Word.Selection.Range, 'mailto:'+$User.mail.ToString(), $null, $null, $User.mail.ToString(), $null) | Out-Null
