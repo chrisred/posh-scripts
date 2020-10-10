@@ -112,13 +112,15 @@ The script would typically be configured as a log on script via Group Policy, ho
 
 Multiple templates can be placed in the `$TemplatePath` folder, they will all be processed by the script, however sub-folders will not be searched.
 
-To embed details from an AD User object into a template file the attribute name must be wrapped in `{}` to create a "tag". For example `{mail}` will embed the users email address and `{telephoneNumber}` the phone number. The tag name must match the attribute name (`LDAP-Display-Name` to be exact) as it appears in AD, these can be found under the properties of a User object in the "Attribute Editor" tab, or a useful selection listed [here](https://cloudsupport.exclaimer.com/hc/en-us/articles/207803339-Which-AD-attributes-can-be-used-in-Signatures-for-Office-365-)
+To embed details from an AD User object into a template file the attribute name must be wrapped in `{}` to create a "tag". For example `{mail}` will embed the users email address and `{telephoneNumber}` the phone number. The tag name must match the attribute name (`LDAP-Display-Name` to be exact) as it appears in AD, these can be found under the properties of a User object in the "Attribute Editor" tab, or a useful selection listed [here](https://support.exclaimer.com/hc/en-gb/articles/360028968151-Which-Active-Directory-attributes-can-be-used-in-Exclaimer-Cloud-Signatures-for-Office-365-).
 
 It is also possible to assign a template as the default "new" or "reply" signature, and to delete a signature by using an "action". The format is `Signature_Name-Action.docx`, eg. `Full-New.docx` will create a signature named "Full" and make it default for new mail messages, adding "Delete" instead (`Full-Delete.docx`) will delete the "Full" signature completley. The four actions are `New`, `Reply` `Both` and `Delete`.
 
 Using any action except `Delete` will cause an `outlook.exe` process to be started as this is required to change the default signature settings. The actions will only run if there is a default Outlook profile already present, otherwise the script would be blocked by the "Add New Account" wizard dialog.
 
-The following variables are available for configuration: `$TemplatePath`, `$UpdateThreashold`, `$SettingsKeyName`, `$EnableLogFile`, `$LogPath`. These are described in more detail in the script file.
+The following variables are available for configuration: `$TemplatePath`, `$UpdateThreashold`, `$SettingsKeyName`, `$EnableLogFile`, `$EnableDeleteEmptyTagLine`, `$EnableMailToLink`, `$LogPath`. These are described in more detail in the script file.
+
+There is also `$EnableMachineSignatureFolderName`, this will search an alternative Local Machine registry location for the key that holds the name of the "Signatures" folder. There are certain configurations where this location may hold the correct folder name (possibly when the Windows and Office languges differ and for Office 2016+). When enabled it will replace the value from the Current User location that is read by default. If the Local Machine key does not exist the default value is used.
 
 ## LogCleanTask.ps1 ##
 

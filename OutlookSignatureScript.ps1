@@ -1,4 +1,4 @@
-# OutlookSignatureScript.ps1 v1.1 (c) Chris Redit
+# OutlookSignatureScript.ps1 v1.2 (c) Chris Redit
 
 ## README
 # The commented variables below are used to configure the script.
@@ -11,11 +11,11 @@ $TemplatePath = '\\example.com\NETLOGON\Signatures'
 $UpdateThreashold = (24*60)
 # Registry key name for storing settings under the users profile, default 'OutlookSignatureScript'.
 $SettingsKeyName = 'OutlookSignatureScript'
-# Alternate method for discovering the 'Signature' folder name, this will search the local machine registry location.
-$UseMachineSignatureFolderName = $false
-# Enable deletion of lines in a signature template which contain an empty tag, occurs when the property in Active Directory is not populated for a user.
+# Enable alternate method for discovering the 'Signature' folder name, this will search the Local Machine registry location, default $false.
+$EnableMachineSignatureFolderName = $false
+# Enable deletion of lines in a signature template which contain an empty tag, occurs when a property in Active Directory is not populated for a user, default $false.
 $EnableDeleteEmptyTagLine = $false
-# Enable "mailto:" formatting for email addresses.
+# Enable "mailto:" formatting for email addresses, default $true.
 $EnableMailToLink = $true
 # Enable the log file (for event log logging a source named 'OutlookSignature' must be registered), default $false
 $EnableLogFile = $false
@@ -100,7 +100,7 @@ try
     
     # defines whether there is a prompt for choosing Outlook profile at launch, 0 = no prompt, 1 = prompt
     $PickLogonProfile = (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Exchange\Client\Options' -EA SilentlyContinue).PickLogonProfile
-    if ($PickLogonProfile -eq $null)
+    if ($null -eq $PickLogonProfile)
     {
         # if Outlook profile options have never been changed the reg key will not exisit and the setting is effectivly 0
         $PickLogonProfile = 0
@@ -119,7 +119,7 @@ try
     # get the localised name for the "Signatures" folder from user profile registry location
     $SignatureFolderName = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Office\$OutlookVersion.0\Common\General").Signatures
     
-    if ($UseMachineSignatureFolderName)
+    if ($EnableMachineSignatureFolderName)
     {
         # In some cases the localised name of the "Signatures" folder is set at a local machine registry location,
         # this may be when Windows and Office were installed/configured with different language settings.
@@ -143,7 +143,7 @@ try
     
     if ($null -eq $SignatureFolderName)
     {
-        throw '"Signature" folder name not found, enable $UseMachineSignatureFolderName to try an alternative method.'
+        throw '"Signature" folder name not found, use $EnableMachineSignatureFolderName to try an alternative method.'
     }
     
     $OutlookSignaturePath = $env:APPDATA+'\Microsoft\'+$SignatureFolderName
@@ -232,7 +232,7 @@ try
             Copy-Item -Path $File.FullName -Destination (Join-Path -Path $OutlookSignaturePath -ChildPath $TemplateFileName) -Force -EA Stop
             
             # create word.exe process if one is not already running
-            if ($Word -eq $null)
+            if ($null -eq $Word)
             {
                 $Word = New-Object -TypeName 'Microsoft.Office.Interop.Word.ApplicationClass'
             }
@@ -406,7 +406,7 @@ $EventText
     Write-Host $LogText
     Write-Log $LogText -EventId 1944
     
-    if ($Word -ne $null)
+    if ($null -eq $Word)
     {
         # quit Word process if it was created and release from memory
         $Word.Quit() | Out-Null
