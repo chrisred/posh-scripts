@@ -13,6 +13,8 @@ $UpdateThreashold = (24*60)
 $SettingsKeyName = 'OutlookSignatureScript'
 # Alternate method for discovering the 'Signature' folder name, this will search the local machine registry location.
 $UseMachineSignatureFolderName = $false
+# Enable deletion of lines in a signature template which contain an empty tag, occurs when the property in Active Directory is not populated for a user.
+$EnableDeleteEmptyTagLine = $false
 # Enable the log file (for event log logging a source named 'OutlookSignature' must be registered), default $false
 $EnableLogFile = $false
 # Path to write the log file to, default is 'AppData\Local\OutlookSignatureScript'.
@@ -256,20 +258,39 @@ try
                     }
                     else
                     {
-                        # https://msdn.microsoft.com/en-us/library/office/microsoft.office.interop.word.find.execute.aspx
-                        $Word.Selection.Find.Execute(
-                            $Tag.Value, # FindText string
-                            $false,     # MatchCase bool
-                            $true,      # MatchWholeWord bool
-                            $false,     # MatchWildcards bool
-                            $false,     # MatchSoundsLike bool
-                            $false,     # MatchAllWordForms bool
-                            $true,      # Forward bool
-                            [Microsoft.Office.Interop.Word.WdFindWrap]::wdFindContinue, # Wrap enum
-                            $false,     # Format bool
-                            $User.($Tag.Groups[1].Value).ToString(),                    # ReplaceWith string
-                            [Microsoft.Office.Interop.Word.WdReplace]::wdReplaceOne     # Replace enum
-                        ) | Out-Null
+                        $UserPropertyValue = $User.($Tag.Groups[1].Value).ToString()
+                        if ($UserPropertyValue -eq '' -and $EnableDeleteEmptyTagLine -eq $true)
+                        {
+                            # https://msdn.microsoft.com/en-us/library/office/microsoft.office.interop.word.find.execute.aspx
+                            $Word.Selection.Find.Execute(
+                                $Tag.Value, # FindText string
+                                $false,     # MatchCase bool
+                                $true,      # MatchWholeWord bool
+                                $false,     # MatchWildcards bool
+                                $false,     # MatchSoundsLike bool
+                                $false,     # MatchAllWordForms bool
+                                $true,      # Forward bool
+                                [Microsoft.Office.Interop.Word.WdFindWrap]::wdFindContinue # Wrap enum
+                            ) | Out-Null
+                            $Word.Selection.Expand([Microsoft.Office.Interop.Word.WdUnits]::wdLine)
+                            $Word.Selection.Delete()
+                        }
+                        else
+                        {
+                            $Word.Selection.Find.Execute(
+                                $Tag.Value, # FindText string
+                                $false,     # MatchCase bool
+                                $true,      # MatchWholeWord bool
+                                $false,     # MatchWildcards bool
+                                $false,     # MatchSoundsLike bool
+                                $false,     # MatchAllWordForms bool
+                                $true,      # Forward bool
+                                [Microsoft.Office.Interop.Word.WdFindWrap]::wdFindContinue, # Wrap enum
+                                $false,     # Format bool
+                                $UserPropertyValue,                                     # ReplaceWith string
+                                [Microsoft.Office.Interop.Word.WdReplace]::wdReplaceOne # Replace enum
+                            ) | Out-Null
+                        }
                     }
                 }
                 catch
