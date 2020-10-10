@@ -1,4 +1,4 @@
-# OutlookSignatureScript.ps1 v1.2 (c) Chris Redit
+# OutlookSignatureScript.ps1 v1.3 (c) Chris Redit
 
 ## README
 # The commented variables below are used to configure the script.
