@@ -54,6 +54,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="LogGUI.xaml.cs">
+      <DependentUpon>LogGUI.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RunspaceGUI.xaml.cs">
       <DependentUpon>RunspaceGUI.xaml</DependentUpon>
     </Compile>
@@ -71,6 +74,10 @@
     <Compile Include="GUI.xaml.cs">
       <DependentUpon>GUI.xaml</DependentUpon>
     </Compile>
+    <Page Include="LogGUI.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="RunspaceGUI.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
