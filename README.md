@@ -135,3 +135,35 @@ The following additional variables are available for configuration in the script
 To log information and errors to the "Application" event log an event source named `LogClean` must be registered. This can be done with the following command on the server running the script.
 
 `New-EventLog -LogName 'Application' -Source 'LogClean'`
+
+## Set-RemoteWMIPermissions.ps1 ##
+
+Assign a non-admin account the permissions required to access WMI namespaces and the Service Control Manager remotely. The most common use case is for monitoring solutions which read performance counter (or other values) via WMI queries. Activity is logged to the Application event log under the "MonitorPermissions" source. The script has been tested on Server 2012 R2 and greater.
+
+Typically this would be run as a computer startup script via Group Policy and be used in addition to adding the non-admin account to built-in groups such as `Distributed COM Users` and `Performance Monitor Users`. 
+
+### Example ###
+
+`.\Set-RemoteWMIPermissions.ps1 -AccountName 'MyUser'`
+
+`.\Set-RemoteWMIPermissions.ps1 -AccountName 'MyUser' -DomainName 'MYDOMAIN'`
+
+When calling from a PowerShell console or existing script using a path which contains spaces the path must be quoted and the call operator (`&`) used.
+
+`& "C:\My Path\Set-RemoteWMIPermissions.ps1" -AccountName 'MyUser'`
+
+## Set-RemoteServicePermissions.ps1 ##
+
+Assign a non-admin account the permissions required to read the status of a service object remotely. For most service objects this access right is assigned to locally authenticated users only. Activity is logged to the Application event log under the "MonitorPermissions" source. The script has been tested on Server 2012 R2 and greater.
+
+Typically this would be run via Group Policy or a Scheduled Task and be used in addition to the `Set-RemoteWMIPermissions.ps1` script which assigns simlar permissions to the Service Control Manager.
+
+### Example ###
+
+`.\Set-RemoteServicePermissions.ps1 -AccountName 'MyUser' -ServiceName 'MyService'`
+
+`.\Set-RemoteServicePermissions.ps1 -AccountName 'MyUser' -ServiceName 'MyService' -DomainName 'MYDOMAIN'`
+
+When calling from a PowerShell console or existing script using a path which contains spaces the path must be quoted and the call operator (`&`) used.
+
+`& "C:\My Path\Set-RemoteServicePermissions.ps1" -AccountName 'MyUser' -ServiceName 'MyService'`
